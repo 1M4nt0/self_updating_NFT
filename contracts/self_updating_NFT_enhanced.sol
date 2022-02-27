@@ -1,15 +1,13 @@
-//SPDX-License-Identifier: Unlicense
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "base64-sol/base64.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
-contract self_updating_NFT_enhanced is ERC721URIStorage {
+contract self_updating_NFT_enhanced is ERC721URIStorage, Ownable {
 
-	event CreatedSVGNFT(uint256 indexed tokenId, string tokenURI);
-
-	string private _contentSVGMarkdown;
 	struct Color {
 		uint red;
 		uint green;
@@ -17,8 +15,7 @@ contract self_updating_NFT_enhanced is ERC721URIStorage {
 	}
 
 	Color[] private colors;
-
-	uint256 numberOfMeshes = 12;
+	uint256 private numberOfMeshes = 12;
 
 	constructor() ERC721("TEST", "TESTNFT") {
 		colors.push(Color(23, 18, 25)); 		// Blue
@@ -26,9 +23,10 @@ contract self_updating_NFT_enhanced is ERC721URIStorage {
 		colors.push(Color(237, 240, 96)); 		// Yellow
 		colors.push(Color(240, 128, 60)); 		// Orange
 		colors.push(Color(49, 13, 32)); 		// Bordeaux
+		create();
     }
 
-	function generateNewSvgURI() internal returns (string memory) {
+	function generateNewSvgURI() internal view returns (string memory) {
 		uint256 ownerUint = uint256(uint160(address(ownerOf(0))));
 		bytes memory updatedContent = abi.encodePacked(getNextMesh(ownerUint));
 		for(uint i = 1; i < numberOfMeshes; i++){
@@ -36,7 +34,6 @@ contract self_updating_NFT_enhanced is ERC721URIStorage {
 			updatedContent = abi.encodePacked(updatedContent, getNextMesh(randomNumber));
 		}
 		string memory fullRawURI = getFullSVGImage(string(updatedContent));
-		_contentSVGMarkdown = string(updatedContent);
 		string memory imageURI = svgToImageURI(fullRawURI);
 		return formatTokenURI(imageURI);	
 	}
@@ -48,9 +45,9 @@ contract self_updating_NFT_enhanced is ERC721URIStorage {
 	function getNextMesh(uint256 _randomNumber) internal view returns (string memory) {
 		uint256 m_xPos = (uint256(keccak256(abi.encode(_randomNumber, 1252312335))) % 800);
 		uint256 m_yPos = (uint256(keccak256(abi.encode(_randomNumber, 25123132))) % 800);
-		uint256 m_height = (uint256(keccak256(abi.encode(_randomNumber, 3235235))) % 500) + 50;
+		uint256 m_height = (uint256(keccak256(abi.encode(_randomNumber, 336235235))) % 500) + 50;
 		uint256 m_width = (uint256(keccak256(abi.encode(_randomNumber, 52351234))) % 500) + 50;
-		Color memory m_color = colors[uint256(keccak256(abi.encode(_randomNumber, 2352345))) % 5];
+		Color memory m_color = colors[uint256(keccak256(abi.encode(_randomNumber, 23542345))) % 5];
 
 		return string(abi.encodePacked(
 			'<rect x="',
@@ -72,31 +69,29 @@ contract self_updating_NFT_enhanced is ERC721URIStorage {
 	}
 
 	function getFullSVGImage(string memory content) internal pure returns (string memory) {
-		string memory baseSVGMarkdown = '<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000">';
+		string memory baseSVGMarkdown = '<svg xmlns="http://www.w3.org/2000/svg" fill="white" width="1000" height="1000">';
 		return string(abi.encodePacked(baseSVGMarkdown, content, '</svg>'));
 	}
 
-	function create() public {
+	function create() internal {
 		_safeMint(msg.sender, 0);
-		string memory tokenURI = generateNewSvgURI();
-		_setTokenURI(0, tokenURI);
-		emit CreatedSVGNFT(0, tokenURI);
+		string memory imageURI = generateNewSvgURI();
+		_setTokenURI(0, imageURI);
 	}
 
-	function svgToImageURI(string memory _svg) public pure returns (string memory){
+	function svgToImageURI(string memory _svg) internal pure returns (string memory){
 		string memory baseURL = "data:image/svg+xml;base64,";
 		string memory svgBase64Encoded = Base64.encode(bytes(string(abi.encodePacked(_svg))));
-		string memory imageURI = string(abi.encodePacked(baseURL,svgBase64Encoded));
-		return imageURI;
+		return string(abi.encodePacked(baseURL,svgBase64Encoded));
 	}
 
-	function formatTokenURI(string memory _imageURI) public pure returns (string memory) {
+	function formatTokenURI(string memory _imageURI) internal pure returns (string memory) {
 		string memory baseURL = "data:application/json;base64,";
 		return string(abi.encodePacked(
 			baseURL,
 			Base64.encode(
 				bytes(abi.encodePacked(
-					'{"name:" "TEST", ', 
+					'{"name":"TEST", ', 
 					'"description": "TEST NFT", ', 
 					'"attributes": "", ', 
 					'"image": "', _imageURI, '"}'

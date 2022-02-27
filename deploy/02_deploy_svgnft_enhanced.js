@@ -28,20 +28,17 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
 	);
 	const networkName = networkConfig[chainId]["name"];
 	log(
-		`Verify with: \n npx hardhat verify --network ${networkName} ${svgNFT.address}\n`
+		`Verify with: \n npx hardhat etherscan-verify --network ${networkName} ${svgNFT.address}\n`
 	);
-
-	let transactionResponse = await svgNFT.create();
-	let receipt = await transactionResponse.wait(1);
 
 	log(`NFT minted!\n`);
 	log(`You can view the tokenUri here: ${await svgNFT.tokenURI(0)}\n`);
-
+	/*
 	let owner = 0;
 	let not_owner = 1;
 	let temp;
 
-	for (i = 0; i < 2; i++) {
+	for (i = 0; i < 1; i++) {
 		svgNFT = new hre.ethers.Contract(
 			SVGNFT.address,
 			svgNFTContract.interface,
@@ -59,4 +56,5 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
 		log(`Transaction ${i} done! Now owner is ${owner}`);
 		log(`You can view the tokenUri here: ${await svgNFT.tokenURI(0)}\n`);
 	}
+	*/
 };
