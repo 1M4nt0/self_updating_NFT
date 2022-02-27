@@ -15,7 +15,7 @@ contract self_updating_NFT_enhanced is ERC721URIStorage, Ownable {
 	}
 
 	Color[] private colors;
-	uint256 private numberOfMeshes = 12;
+	uint256 private numberOfMeshes = 15;
 
 	constructor() ERC721("TEST", "TESTNFT") {
 		colors.push(Color(23, 18, 25)); 		// Blue
@@ -43,8 +43,8 @@ contract self_updating_NFT_enhanced is ERC721URIStorage, Ownable {
 	}
 
 	function getNextMesh(uint256 _randomNumber) internal view returns (string memory) {
-		uint256 m_xPos = (uint256(keccak256(abi.encode(_randomNumber, 1252312335))) % 800);
-		uint256 m_yPos = (uint256(keccak256(abi.encode(_randomNumber, 25123132))) % 800);
+		uint256 m_xPos = (uint256(keccak256(abi.encode(_randomNumber, 1252312335))) % 700);
+		uint256 m_yPos = (uint256(keccak256(abi.encode(_randomNumber, 25123132))) % 700);
 		uint256 m_height = (uint256(keccak256(abi.encode(_randomNumber, 336235235))) % 500) + 50;
 		uint256 m_width = (uint256(keccak256(abi.encode(_randomNumber, 52351234))) % 500) + 50;
 		Color memory m_color = colors[uint256(keccak256(abi.encode(_randomNumber, 23542345))) % 5];
@@ -69,7 +69,7 @@ contract self_updating_NFT_enhanced is ERC721URIStorage, Ownable {
 	}
 
 	function getFullSVGImage(string memory content) internal pure returns (string memory) {
-		string memory baseSVGMarkdown = '<svg xmlns="http://www.w3.org/2000/svg" fill="white" width="1000" height="1000">';
+		string memory baseSVGMarkdown = '<svg xmlns="http://www.w3.org/2000/svg" style="background-color:white" width="1000" height="1000">';
 		return string(abi.encodePacked(baseSVGMarkdown, content, '</svg>'));
 	}
 
@@ -91,8 +91,8 @@ contract self_updating_NFT_enhanced is ERC721URIStorage, Ownable {
 			baseURL,
 			Base64.encode(
 				bytes(abi.encodePacked(
-					'{"name":"TEST", ', 
-					'"description": "TEST NFT", ', 
+					'{"name":"The soul of wallet", ', 
+					'"description": "The image of this NFT varies depending on the shape of the soul of your wallet", ', 
 					'"attributes": "", ', 
 					'"image": "', _imageURI, '"}'
 				))

@@ -15,40 +15,24 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
 
 	log(`You have deployed the NFT contract to ${SVGNFT.address}\n`);
 
-	const svgNFTContract = await hre.ethers.getContractFactory(
-		"self_updating_NFT_enhanced"
-	);
+	const svgNFTContract = await hre.ethers.getContractFactory("self_updating_NFT_enhanced");
 	const accounts = await hre.ethers.getSigners();
 	const signer = accounts[0];
 
-	let svgNFT = new hre.ethers.Contract(
-		SVGNFT.address,
-		svgNFTContract.interface,
-		signer
-	);
+	let svgNFT = new hre.ethers.Contract(SVGNFT.address, svgNFTContract.interface, signer);
 	const networkName = networkConfig[chainId]["name"];
-	log(
-		`Verify with: \n npx hardhat etherscan-verify --network ${networkName} ${svgNFT.address}\n`
-	);
+	log(`Verify with: \n npx hardhat etherscan-verify --network ${networkName} ${svgNFT.address}\n`);
 
 	log(`NFT minted!\n`);
 	log(`You can view the tokenUri here: ${await svgNFT.tokenURI(0)}\n`);
-	/*
+
 	let owner = 0;
-	let not_owner = 1;
+	let not_owner = 2;
 	let temp;
 
 	for (i = 0; i < 1; i++) {
-		svgNFT = new hre.ethers.Contract(
-			SVGNFT.address,
-			svgNFTContract.interface,
-			accounts[owner]
-		);
-		transactionResponse1 = await svgNFT.transferFrom(
-			accounts[owner].address,
-			accounts[not_owner].address,
-			0
-		);
+		svgNFT = new hre.ethers.Contract(SVGNFT.address, svgNFTContract.interface, accounts[owner]);
+		transactionResponse1 = await svgNFT.transferFrom(accounts[owner].address, accounts[not_owner].address, 0);
 		await transactionResponse1.wait();
 		temp = owner;
 		owner = not_owner;
@@ -56,5 +40,4 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
 		log(`Transaction ${i} done! Now owner is ${owner}`);
 		log(`You can view the tokenUri here: ${await svgNFT.tokenURI(0)}\n`);
 	}
-	*/
 };
