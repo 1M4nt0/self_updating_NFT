@@ -14,8 +14,6 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
 	});
 
 	log(`You have deployed the NFT contract to ${SVGNFT.address}\n`);
-	let filepath = "./img/test.svg";
-	let svg = fs.readFileSync(filepath, { encoding: "utf8" });
 
 	const svgNFTContract = await hre.ethers.getContractFactory(
 		"self_updating_NFT"
@@ -23,7 +21,7 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
 	const accounts = await hre.ethers.getSigners();
 	const signer = accounts[0];
 
-	const svgNFT = new hre.ethers.Contract(
+	let svgNFT = new hre.ethers.Contract(
 		SVGNFT.address,
 		svgNFTContract.interface,
 		signer
@@ -39,6 +37,27 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
 	log(`NFT minted!\n`);
 	log(`You can view the tokenUri here: ${await svgNFT.tokenURI(0)}\n`);
 
-	let transferTransaction = svgNFT.transferFrom(signer, accounts[1], 0);
-	console.log(await transferTransaction);
+	let owner = 0;
+	let not_owner = 1;
+	let temp;
+
+	for (i = 0; i < 10; i++) {
+		svgNFT = new hre.ethers.Contract(
+			SVGNFT.address,
+			svgNFTContract.interface,
+			accounts[owner]
+		);
+		transactionResponse1 = await svgNFT.transferFrom(
+			accounts[owner].address,
+			accounts[not_owner].address,
+			0
+		);
+		await transactionResponse1.wait();
+		temp = owner;
+		owner = not_owner;
+		not_owner = temp;
+		log(`Transaction ${i} done!`);
+	}
+
+	log(`You can view the tokenUri here: ${await svgNFT.tokenURI(0)}\n`);
 };

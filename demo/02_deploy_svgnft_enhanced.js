@@ -42,8 +42,6 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
 	let temp;
 
 	for (i = 0; i < 10; i++) {
-		log(`Owner is ${owner} and not owner is ${not_owner}!`);
-		log(await svgNFT.balanceOf(accounts[owner].address));
 		svgNFT = new hre.ethers.Contract(
 			SVGNFT.address,
 			svgNFTContract.interface,

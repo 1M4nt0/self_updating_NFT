@@ -25,7 +25,7 @@ contract self_updating_NFT is ERC721URIStorage {
 		return _contentSVGMarkdown;
 	}
 
-	function _afterTokenTransfer(address from, address to, uint256 tokenId) internal override {
+	function _afterTokenTransfer(address, address, uint256) internal override {
 		if(!(_xPos == 1000 && _yPos == 1000) && !(_xPos == 0 && _yPos == 0)){
 			string memory updatedContent = string(abi.encodePacked(_contentSVGMarkdown, getNextBlackSquare()));
 			string memory fullRawURI = getFullSVGImage(updatedContent);
